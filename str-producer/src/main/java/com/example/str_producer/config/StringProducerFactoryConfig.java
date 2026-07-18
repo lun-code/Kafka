@@ -44,6 +44,11 @@ public class StringProducerFactoryConfig {
                 JacksonJsonSerializer.class
         );
 
+        // Con un solo broker local, all y 1 se comportan casi igual porque no hay réplicas que esperar
+        configs.put(
+                ProducerConfig.ACKS_CONFIG, "all"
+        );
+
         // Evita que el serializer añada un header con el nombre completo de la
         // clase Java del productor (str_producer.dto.EventoDTO) — el consumer
         // no tiene esa clase en su classpath, así que confiamos en VALUE_DEFAULT_TYPE
