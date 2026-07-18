@@ -27,28 +27,32 @@ public class StringProducerFactoryConfig {
     @Bean
     public ProducerFactory<String, EventoDTO> producerFactory() {
 
-        // Mapa con la configuración que necesita el productor Kafka
         var configs = new HashMap<String, Object>();
 
-        // Dirección del broker Kafka al que se conectará el productor
         configs.put(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 kafkaProperties.getBootstrapServers()
         );
 
-        // Convierte la clave del mensaje String -> bytes antes de enviarla a Kafka
         configs.put(
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                 StringSerializer.class
         );
 
-        // Convierte el valor del mensaje (EventoDTO) -> JSON antes de enviarlo a Kafka
         configs.put(
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 JacksonJsonSerializer.class
         );
 
-        // Crea la fábrica encargada de crear productores Kafka configurados
+        // Evita que el serializer añada un header con el nombre completo de la
+        // clase Java del productor (str_producer.dto.EventoDTO) — el consumer
+        // no tiene esa clase en su classpath, así que confiamos en VALUE_DEFAULT_TYPE
+        // del lado del consumer en vez de en este header
+        configs.put(
+                JacksonJsonSerializer.ADD_TYPE_INFO_HEADERS,
+                false
+        );
+
         return new DefaultKafkaProducerFactory<>(configs);
     }
 
