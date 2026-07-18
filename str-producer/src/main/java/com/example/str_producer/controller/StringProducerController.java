@@ -1,5 +1,6 @@
 package com.example.str_producer.controller;
 
+import com.example.str_producer.dto.EventoDTO;
 import com.example.str_producer.service.StringProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,8 @@ public class StringProducerController {
     private StringProducerService stringProducerService;
 
     @PostMapping
-    public ResponseEntity<String> sendMessage(@RequestBody String message) {
-        stringProducerService.sendMessage(message);
+    public ResponseEntity<Void> sendMessage(@RequestBody EventoDTO evento) {
+        stringProducerService.sendMessage(evento);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

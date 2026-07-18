@@ -1,5 +1,6 @@
 package com.example.str_producer.config;
 
+import com.example.str_producer.dto.EventoDTO;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 
 import java.util.HashMap;
 
@@ -23,7 +25,7 @@ public class StringProducerFactoryConfig {
 
 
     @Bean
-    public ProducerFactory<String, String> producerFactory() {
+    public ProducerFactory<String, EventoDTO> producerFactory() {
 
         // Mapa con la configuración que necesita el productor Kafka
         var configs = new HashMap<String, Object>();
@@ -40,10 +42,10 @@ public class StringProducerFactoryConfig {
                 StringSerializer.class
         );
 
-        // Convierte el valor del mensaje String -> bytes antes de enviarlo a Kafka
+        // Convierte el valor del mensaje (EventoDTO) -> JSON antes de enviarlo a Kafka
         configs.put(
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class
+                JacksonJsonSerializer.class
         );
 
         // Crea la fábrica encargada de crear productores Kafka configurados
@@ -52,11 +54,11 @@ public class StringProducerFactoryConfig {
 
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate() {
+    public KafkaTemplate<String, EventoDTO> kafkaTemplate() {
 
         // KafkaTemplate es el objeto que usará la aplicación para enviar mensajes:
         //
-        // kafkaTemplate.send("str-topic", "Hola Kafka");
+        // kafkaTemplate.send("str-topic", evento.userId(), evento);
         //
         // Internamente utiliza la ProducerFactory para obtener productores Kafka.
         return new KafkaTemplate<>(producerFactory());
